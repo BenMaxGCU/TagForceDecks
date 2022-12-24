@@ -6,12 +6,7 @@ import {
   AppShell,
   Container,
   Grid,
-  Group,
-  Text,
   Loader,
-  Accordion,
-  Badge,
-  Image,
   createStyles,
 } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
@@ -41,9 +36,12 @@ function App() {
   const { data: decks, isLoading: isLoadingDecks } = useDecks();
   const { classes } = useStyles();
 
+  // Set value of colour scheme in local storage state
+  // TODO?: Possibly refactor to use zustand
   const toggleColourScheme = (value?: ColorScheme) =>
     setColourScheme(value || (colourScheme === 'dark' ? 'light' : 'dark'));
 
+  // Create modal to display deck information
   const openCardModal = (deck: Deck) => {
     const monsters = deck.deckContents?.monsters;
     const spells = deck.deckContents?.spells;
@@ -64,6 +62,7 @@ function App() {
     });
   };
 
+  // Create a grid from decks object
   const deckGrid = decks?.map((deck: Deck) => (
     <Grid.Col
       id={deck.id}

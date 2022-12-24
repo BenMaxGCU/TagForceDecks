@@ -5,7 +5,7 @@ import { Game } from './useGames';
 
 export interface Deck extends Record {
   deckTitle?: string;
-  associatedGame?: Game;
+  associatedGame?: string;
   deckContents?: DeckContents;
   coverImg?: string;
   deckCreator?: string;
@@ -16,6 +16,7 @@ export interface DeckContents {
   spells?: Card[];
   traps?: Card[];
   extra?: Card[];
+  side?: Card[];
 }
 
 export interface Card {

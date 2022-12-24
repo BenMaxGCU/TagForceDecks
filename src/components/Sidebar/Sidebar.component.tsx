@@ -6,11 +6,13 @@ import {
   Image,
   Flex,
 } from '@mantine/core';
-import { IconFiles } from '@tabler/icons';
+import { TablerIcon, IconDeviceGamepad } from '@tabler/icons';
 import { useEffect, useState } from 'react';
-import { useDecks } from '../../apiHooks';
+import { useDecks, useGames } from '../../apiHooks';
 import ColourToggle from '../ColourToggle';
 import Logo from '../../assets/logo.png';
+import { useActionsStore } from '../../stores';
+import { Deck } from '../../apiHooks/useDecks';
 
 const useStyles = createStyles((theme) => ({
   navbar: {
@@ -91,26 +93,57 @@ const useStyles = createStyles((theme) => ({
     height: 20,
     pointerEvents: 'none',
   },
+
+  active: {
+    backgroundColor:
+      theme.colorScheme === 'dark' ? theme.colors.red[6] : theme.colors.red[2],
+    color: theme.colorScheme === 'dark' ? theme.white : theme.black,
+  },
 }));
 
+interface NavbarLinks {
+  icon: TablerIcon;
+  label: string;
+  notifications?: number;
+}
+
 export function Sidebar() {
-  const { classes } = useStyles();
+  const { selectedItem, selectItem } = useActionsStore();
+  const { classes, cx } = useStyles();
   const { data: decks } = useDecks();
+  const { data: games } = useGames();
 
-  const [links, setLinks] = useState([
-    { icon: IconFiles, label: 'Decks', notifications: 0 },
-  ]);
+  const [links, setLinks] = useState<NavbarLinks[]>([]);
 
+  // Create Navbar Links from games and decks objects
   useEffect(() => {
-    if (decks) {
-      setLinks([
-        { icon: IconFiles, label: 'Decks', notifications: decks.length },
-      ]);
+    if (games) {
+      const gameLinks = games.map((game) => {
+        // Check amount of decks associated with the game.
+        const deckCount = decks?.filter(
+          (deck: Deck) => deck.associatedGame === game.id
+        );
+
+        return {
+          icon: IconDeviceGamepad,
+          label: game.gameTitle as string,
+          notifications: deckCount?.length ?? 0,
+        };
+      });
+
+      setLinks([...gameLinks]);
+      selectItem(gameLinks[0]); // Set first link as active
     }
-  }, [decks]);
+  }, [games]);
 
   const mainLinks = links.map((link) => (
-    <UnstyledButton key={link.label} className={classes.mainLink}>
+    <UnstyledButton
+      key={link.label}
+      className={cx(classes.mainLink, {
+        [classes.active]: selectedItem === link,
+      })}
+      onClick={() => selectItem(link)}
+    >
       <div className={classes.mainLinkInner}>
         <link.icon size={20} className={classes.mainLinkIcon} stroke={1.5} />
         <span>{link.label}</span>

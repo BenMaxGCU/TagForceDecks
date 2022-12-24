@@ -27,9 +27,16 @@ interface DeckInfoProps {
   spells?: Card[];
   traps?: Card[];
   extra?: Card[];
+  side?: Card[];
 }
 
-export function DeckInfo({ monsters, spells, traps, extra }: DeckInfoProps) {
+export function DeckInfo({
+  monsters,
+  spells,
+  traps,
+  extra,
+  side,
+}: DeckInfoProps) {
   const { classes } = useStyles();
 
   return (
@@ -79,20 +86,36 @@ export function DeckInfo({ monsters, spells, traps, extra }: DeckInfoProps) {
               ))}
           </>
         </Stack>
-        <>
-          <Title order={5}>Extra Deck ({extra?.length ?? 0})</Title>
-          {extra &&
-            extra?.map((extra, index) => (
-              <Group
-                id={index.toString()}
-                spacing='xs'
-                className={classes.listItem}
-              >
-                <Text size='md'>{extra.name}</Text>
-                {extra.quantity > 1 && <Badge>{extra.quantity}</Badge>}
-              </Group>
-            ))}
-        </>
+        <Stack>
+          <>
+            <Title order={5}>Extra Deck ({extra?.length ?? 0})</Title>
+            {extra &&
+              extra?.map((extra, index) => (
+                <Group
+                  id={index.toString()}
+                  spacing='xs'
+                  className={classes.listItem}
+                >
+                  <Text size='md'>{extra.name}</Text>
+                  {extra.quantity > 1 && <Badge>{extra.quantity}</Badge>}
+                </Group>
+              ))}
+          </>
+          <>
+            <Title order={5}>Side Deck ({side?.length ?? 0})</Title>
+            {side &&
+              side?.map((side, index) => (
+                <Group
+                  id={index.toString()}
+                  spacing='xs'
+                  className={classes.listItem}
+                >
+                  <Text size='md'>{side.name}</Text>
+                  {side.quantity > 1 && <Badge>{side.quantity}</Badge>}
+                </Group>
+              ))}
+          </>
+        </Stack>
       </SimpleGrid>
     </Container>
   );
