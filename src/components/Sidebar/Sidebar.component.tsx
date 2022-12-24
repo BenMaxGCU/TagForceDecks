@@ -16,6 +16,8 @@ import { Deck } from '../../apiHooks/useDecks';
 
 const useStyles = createStyles((theme) => ({
   navbar: {
+    backgroundColor:
+      theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.white,
     paddingTop: 0,
   },
 
@@ -25,30 +27,26 @@ const useStyles = createStyles((theme) => ({
     marginLeft: -theme.spacing.md,
     marginRight: -theme.spacing.md,
     color: theme.colorScheme === 'dark' ? theme.white : theme.black,
-    borderBottom: `1px solid ${
-      theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3]
-    }`,
   },
 
   section: {
     marginLeft: -theme.spacing.md,
     marginRight: -theme.spacing.md,
     marginBottom: theme.spacing.md,
+  },
 
-    '&:not(:last-of-type)': {
-      borderBottom: `1px solid ${
-        theme.colorScheme === 'dark'
-          ? theme.colors.dark[4]
-          : theme.colors.gray[3]
-      }`,
-    },
+  footer: {
+    borderTop: `1px solid ${
+      theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[3]
+    }`,
+    marginTop: 'auto',
   },
 
   mainLinks: {
     paddingLeft: theme.spacing.md - theme.spacing.xs,
     paddingRight: theme.spacing.md - theme.spacing.xs,
     paddingBottom: theme.spacing.md,
-    paddingTop: theme.spacing.lg,
+    paddingTop: theme.spacing.sm,
   },
 
   mainLink: {
@@ -101,9 +99,10 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-interface NavbarLinks {
+export interface NavbarLink {
   icon: TablerIcon;
   label: string;
+  itemId?: string;
   notifications?: number;
 }
 
@@ -113,7 +112,7 @@ export function Sidebar() {
   const { data: decks } = useDecks();
   const { data: games } = useGames();
 
-  const [links, setLinks] = useState<NavbarLinks[]>([]);
+  const [links, setLinks] = useState<NavbarLink[]>([]);
 
   // Create Navbar Links from games and decks objects
   useEffect(() => {
@@ -127,6 +126,7 @@ export function Sidebar() {
         return {
           icon: IconDeviceGamepad,
           label: game.gameTitle as string,
+          itemId: game.id,
           notifications: deckCount?.length ?? 0,
         };
       });
@@ -161,12 +161,15 @@ export function Sidebar() {
       <Navbar.Section className={classes.header}>
         <Flex gap='xs' direction='row' align='center'>
           <Image height={100} fit='contain' src={Logo} />
-          <ColourToggle />
         </Flex>
       </Navbar.Section>
 
       <Navbar.Section className={classes.section}>
         <div className={classes.mainLinks}>{mainLinks}</div>
+      </Navbar.Section>
+
+      <Navbar.Section className={classes.footer}>
+        <ColourToggle />
       </Navbar.Section>
     </Navbar>
   );

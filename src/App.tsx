@@ -8,15 +8,17 @@ import {
   Grid,
   Loader,
   createStyles,
+  Center,
 } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
 import { ModalsProvider, openModal } from '@mantine/modals';
 import { NotificationsProvider } from '@mantine/notifications';
-import { useDecks } from './apiHooks';
+import { useDecksByGame } from './apiHooks';
 import { Deck } from './apiHooks/useDecks';
 import { ImageCard } from './components';
 import DeckInfo from './components/DeckInfo';
 import { Sidebar } from './components/Sidebar/Sidebar.component';
+import { useActionsStore } from './stores';
 
 const emotionCache = createEmotionCache({ key: 'tagforcedecks' });
 
@@ -33,7 +35,10 @@ function App() {
     key: 'colour-scheme',
     defaultValue: 'dark' as ColorScheme,
   });
-  const { data: decks, isLoading: isLoadingDecks } = useDecks();
+  const { selectedItem } = useActionsStore();
+  const { data: gameDecks, isLoading: isLoadingGameDecks } = useDecksByGame(
+    selectedItem?.itemId ?? ''
+  );
   const { classes } = useStyles();
 
   // Set value of colour scheme in local storage state
@@ -63,7 +68,7 @@ function App() {
   };
 
   // Create a grid from decks object
-  const deckGrid = decks?.map((deck: Deck) => (
+  const deckGrid = gameDecks?.map((deck: Deck) => (
     <Grid.Col
       id={deck.id}
       className={classes.grid}
@@ -97,8 +102,10 @@ function App() {
           <ModalsProvider>
             <AppShell navbar={<Sidebar />} padding={0}>
               <Container size='xl' my='xl' p={50}>
-                {isLoadingDecks ? (
-                  <Loader color='grape' />
+                {isLoadingGameDecks ? (
+                  <Center>
+                    <Loader color='grape' />
+                  </Center>
                 ) : (
                   <Grid>{deckGrid}</Grid>
                 )}
